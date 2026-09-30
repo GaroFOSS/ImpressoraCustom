@@ -30,7 +30,7 @@ private slots:
         expected += QByteArray::fromHex("1b61");
         expected.append(static_cast<char>(alignment));
         expected += "Hello\n";
-        expected += QByteArray::fromHex("1d21001b64031d5601");
+        expected += QByteArray::fromHex("1d21001b64061d5601");
         QCOMPARE(error, QString());
         QCOMPARE(actual, expected);
     }

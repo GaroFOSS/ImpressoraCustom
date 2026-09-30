@@ -35,16 +35,16 @@ ApplicationWindow {
 
         RowLayout {
             Label { text: "Size"; Layout.preferredWidth: 76 }
-            RadioButton { id: small; text: "Small"; checked: true; ButtonGroup.group: sizeGroup }
-            RadioButton { id: medium; text: "Medium"; ButtonGroup.group: sizeGroup }
-            RadioButton { text: "Big"; ButtonGroup.group: sizeGroup }
+            RadioButton { id: small; text: "Pequeno"; checked: true; ButtonGroup.group: sizeGroup }
+            RadioButton { id: medium; text: "Medio"; ButtonGroup.group: sizeGroup }
+            RadioButton { text: "Grande"; ButtonGroup.group: sizeGroup }
         }
 
         RowLayout {
             Label { text: "Alignment"; Layout.preferredWidth: 76 }
-            RadioButton { id: left; text: "Left"; checked: true; ButtonGroup.group: alignmentGroup }
-            RadioButton { id: center; text: "Center"; ButtonGroup.group: alignmentGroup }
-            RadioButton { text: "Right"; ButtonGroup.group: alignmentGroup }
+            RadioButton { id: left; text: "Esquerda"; checked: true; ButtonGroup.group: alignmentGroup }
+            RadioButton { id: center; text: "Centro"; ButtonGroup.group: alignmentGroup }
+            RadioButton { text: "Direita"; ButtonGroup.group: alignmentGroup }
         }
 
         RowLayout {

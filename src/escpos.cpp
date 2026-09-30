@@ -68,7 +68,7 @@ QByteArray EscPos::encode(const QString &text, int size, int alignment, QString 
     if (!encoded.endsWith('\n'))
         job.append('\n');
     job += QByteArray::fromHex("1d2100"); // restore normal size before feeding
-    job += QByteArray::fromHex("1b6403"); // ESC d 3: advance three lines
+    job += QByteArray::fromHex("1b6406"); // ESC d 6: advance six lines before cutting
     job += QByteArray::fromHex("1d5601"); // GS V 1: partial cut
     return job;
 }

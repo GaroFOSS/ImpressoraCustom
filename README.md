@@ -16,14 +16,15 @@ sudo apt-get install build-essential cmake qt6-base-dev qt6-declarative-dev \
     qml6-module-qtqml qml6-module-qtqml-models \
     qml6-module-qtquick qml6-module-qtquick-controls qml6-module-qtquick-layouts \
     qml6-module-qtquick-window qml6-module-qtquick-templates qml6-module-qtqml-workerscript
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build --parallel
-ctest --test-dir build --output-on-failure
-./build/impressora_custom
+bash scripts/build-test.sh
+./build/linux/impressora_custom
 ```
 
-If Qt was installed through the Qt installer, supply its kit directory with
-`-DCMAKE_PREFIX_PATH=/path/to/Qt/6.x/gcc_64` when configuring.
+If Qt was installed through the Qt installer, supply its kit directory:
+
+```sh
+bash scripts/build-test.sh --qt-prefix /path/to/Qt/6.x/gcc_64
+```
 
 ## Build on Windows
 
@@ -32,15 +33,32 @@ or MinGW C++ toolchain. Open the shell for that compiler. For example, in an
 MSVC Developer PowerShell (adjust the Qt path to your installed version):
 
 ```powershell
-cmake -S . -B build -DCMAKE_PREFIX_PATH="C:/Qt/6.8.3/msvc2022_64"
-cmake --build build --config Release --parallel
-ctest --test-dir build -C Release --output-on-failure
-& "C:/Qt/6.8.3/msvc2022_64/bin/windeployqt.exe" --qmldir . build/Release/impressora_custom.exe
-& ./build/Release/impressora_custom.exe
+.\scripts\build-test.ps1 -QtPrefix "C:/Qt/6.8.3/msvc2022_64"
+& "C:/Qt/6.8.3/msvc2022_64/bin/windeployqt.exe" --qmldir . build/windows/Release/impressora_custom.exe
+& ./build/windows/Release/impressora_custom.exe
 ```
 
-Tests are enabled by default; use `-DBUILD_TESTING=OFF` if building without
-Qt Test. Raw TCP printing requires no printer driver or Elgin SDK.
+If PowerShell blocks the script, invoke it with a process-local policy override:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\build-test.ps1 -QtPrefix "C:/Qt/6.8.3/msvc2022_64"
+```
+
+For MinGW, open a shell with the matching compiler on PATH and pass the matching
+Qt kit with `-Generator "MinGW Makefiles"`. That generator places the executable
+directly in `build/windows`; adjust the deploy/run paths accordingly.
+
+Both scripts configure, compile, and run the tests, stopping on failure. They
+work from any current directory, default to Release, and always enable tests.
+Linux accepts `--config`, `--build-dir`, and `--generator`; Windows accepts
+`-Configuration`, `-BuildDir`, and `-Generator`. Relative custom build paths
+resolve against the current directory. Use a different build directory when
+changing compiler, Qt kit, or generator. Windows adds the selected Qt kit to
+PATH for testing and restores PATH afterward. Dependencies must already be
+installed; the scripts do not install packages or run the printer app.
+
+Tests are enabled by default in CMake; use `-DBUILD_TESTING=OFF` for a manual
+build without Qt Test. Raw TCP printing requires no printer driver or Elgin SDK.
 
 ## Printer behavior
 
@@ -53,7 +71,7 @@ Qt Test. Raw TCP printing requires no printer driver or Elgin SDK.
   tabs) and embedded control commands produce an error before connecting.
 - Every job initializes the printer, exits double-byte mode (`FS .`), selects
   CP850 (`ESC t 2`), applies formatting, prints, restores normal size, feeds
-  three lines (`ESC d 3`), and requests a partial cut (`GS V 1`).
+  six lines (`ESC d 6`), and requests a partial cut (`GS V 1`).
 - **Sent to printer** means all bytes were transmitted by the socket. It does
   not confirm paper availability or completion of the physical print/cut.
 - The app remains responsive while connecting/sending. A job times out after
